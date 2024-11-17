@@ -1,62 +1,32 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import s from "./App.module.css"
 
-
-import Description from './Description/Description'
-import Options from './Options/Options'
-import Feedback from './Feedback/Feedback'
-import Notification from './Notification/Notification'
-
+import ContactForm from './ContactForm/ContactForm'
+import SearchBox from './SearchBox/SearchBox'
+import ContactList from './ContactList/ContactList'
 
 function App() {
-  const [feedback, setFeedback] = useState(() => 
-    JSON.parse(localStorage.getItem('feedback')) ??
-  {
-    good: 0,
-	  neutral: 0,
-	  bad: 0
-  });
  
-  const updateFeedback = feedbackType => {
-        setFeedback(prev => ({
-          ...prev,
-          [feedbackType]: prev[feedbackType] + 1,
-        }));
-       };
-  
-  const totalFeedback = feedback.good + feedback.neutral + feedback.bad;
-  
-  const positiveFeedback = Math.round((feedback.good / totalFeedback) * 100);
+  const [contacts, setContacts] = useState([
+      {id: 'id-1', name: 'Rosie Simpson', number: '459-12-56'},
+      {id: 'id-2', name: 'Hermione Kline', number: '443-89-12'},
+      {id: 'id-3', name: 'Eden Clements', number: '645-17-79'},
+      {id: 'id-4', name: 'Annie Copeland', number: '227-91-26'},
+  ]);
 
-  const handleReset = () => {
-    setFeedback({
-      good: 0,
-      neutral: 0,
-      bad: 0,
-    });
-  };
+  const [filter, setFilter] = useState('');
 
-  useEffect(() => {
-    localStorage.setItem('feedback', JSON.stringify(feedback));
-   }, [feedback]);
+  const visibleContacts = contacts.filter((contact) =>
+  contact.name.toLowerCase().includes(filter.toLowerCase()));
 
   return (
     <>
+    
       <div className={s.container}>
-        <Description />
-        <Options 
-        updateFeedback={updateFeedback}
-        totalFeedback={totalFeedback}
-        handleReset = {handleReset}
-        />
-        {totalFeedback === 0 ?
-        (<Notification />) :
-        (<Feedback
-         type={feedback}
-         totalFeedback={totalFeedback}
-         positiveFeedback={positiveFeedback} 
-        />
-        )}
+      <h1>Phonebook</h1>
+      <ContactForm />
+      <SearchBox value={filter} onFilter={setFilter} />
+      <ContactList contacts={visibleContacts} />
       </div>
 
     </>
